@@ -31,7 +31,7 @@ header{
 	font-size:50px;
 	right:5px;
 	top:5px;
-	line-height:50px;
+	line-height:40px;
 }
 
 .header_home_menu{
@@ -51,6 +51,7 @@ header{
 	line-height: 50px;
 	font-size: 20px;
 	text-indent: 15px;
+	position: relative;
 }
 .no_item{
 	text-indent:none;
@@ -63,6 +64,7 @@ header{
 	top: 60px;
 	left: 0;
 	width: 100%;
+	z-index: 99;
 }
 .menu_item,.menu_wrapper{display:none;}
 .menu_item li{
@@ -79,6 +81,7 @@ header{
 	float: right;
 	cursor: pointer;
 	background-size: 50px;
+	z-index: 10;
 }
 .play_task{
 	background: url(http://sandbox.runjs.cn/uploads/rs/90/wwourf2n/1358366490_monotone.png) no-repeat;
@@ -89,6 +92,15 @@ header{
 	background: url(http://sandbox.runjs.cn/uploads/rs/90/wwourf2n/1358366911_pause.png) no-repeat;
 	background-size: 40px;
 	background-position: 5px 5px;
+}
+.progress{
+	height: 50px;
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 2;
+	white-space:nowrap;
+	color:#EEE;
 }
 .task_form{
 	text-align: center;
@@ -118,10 +130,10 @@ header{
 
 
 /*背景颜色*/
-.bg_blue{background-color:#7192C5;color: #FFF;}
-.bg_green{background-color:#5CC26F;color: #FFF;}
-.bg_yellow{background-color:#F89406;color: #FFF;}
-.bg_red{background-color:#D15B5B;color: #FFF;}
+.bg_blue{background-color:#7192C5;}
+.bg_green{background-color:#5CC26F;}
+.bg_yellow{background-color:#F89406;}
+.bg_red{background-color:#D15B5B;}
 .bg_grey{background-color: #CCC;color: #FFF;}
 
 /*外边距*/

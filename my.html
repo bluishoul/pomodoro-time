@@ -4,30 +4,28 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 		<link rel="stylesheet" type="text/css" href="http://sandbox.runjs.cn/uploads/rs/90/wwourf2n/reset_y.css">
 		<title>Pomodoro Time for Web</title>
-	<script id="jquery_183" type="text/javascript" class="library" src="http://sandbox.runjs.cn/js/sandbox/jquery/jquery-1.8.3.min.js"></script>
-	<script type="text/javascript" src="http://sandbox.runjs.cn/uploads/rs/90/wwourf2n/json2.js"></script>
-	<script type="text/javascript" src="http://sandbox.runjs.cn/uploads/rs/90/wwourf2n/jstorage.min.js"></script>
-	<script type="text/javascript" src="http://sandbox.runjs.cn/uploads/rs/90/wwourf2n/utils.js"></script>
-	<link rel="stylesheet" type="text/css" href="my.css?1">
-<script type="text/javascript" src="my.js?2"></script>
-</head>
-	<body>
+		<script id="jquery_183" type="text/javascript" class="library" src="http://sandbox.runjs.cn/js/sandbox/jquery/jquery-1.8.3.min.js"></script>
+		<script type="text/javascript" src="http://sandbox.runjs.cn/uploads/rs/90/wwourf2n/json2.js"></script>
+		<script type="text/javascript" src="http://sandbox.runjs.cn/uploads/rs/90/wwourf2n/jstorage.min.js"></script>
+		<script type="text/javascript" src="http://sandbox.runjs.cn/uploads/rs/90/wwourf2n/utils.js"></script>
+		<link rel="stylesheet" type="text/css" href="my.css?3">
+		<script type="text/javascript" src="my.js?5"></script>
+		<link rel="stylesheet" type="text/css" href="http://sandbox.runjs.cn/uploads/rs/90/wwourf2n/calendar.min.css">	</head>
+		<script id="others_modernizr_262" type="text/javascript" class="library" src="http://sandbox.runjs.cn/js/sandbox/other/modernizr.min.js"></script>
+		<script type="text/javascript" src="http://sandbox.runjs.cn/uploads/rs/90/wwourf2n/calendar.min.js">
+		</script>
+ 	<body>
 		<header>ToDo of Today</header>
 		<div class="header_home_menu"><a href="javascript:location.reload();">o</a></div>
-		<div class="header_add_menu"><a href="javascript:void(0);">+</a></div>
-		<div class="main_content">
-			<ol>
-				<li class="no_item">Empty Todo List Of Today</li>
-				<!--<li class="pl10 bg_grey">1</li>
-				<li class="pl10">2<div class="play_task"></div></li>
-				<li class="pl10 bg_grey">3</li>
-				<li class="pl10">4<div class="pause_task"></div></li>-->
-			</ol>
-		</div>
+		<div class="header_add_menu"><a href="javascript:menu.toggle_add_menu();">+</a></div>
+		<div class="main_content"><ol></ol></div>
 		<div class="menu_wrapper">
 			<ul>
 				<li class="menu_item add_task_form task_form bg_blue">
 					<input type="text" class="" name="name" placeholder="Task Name">
+					<input type="text" class="" name="start" placeholder="Touch To Select Start Date" readonly="true">
+    				<div class="calendar jsCalendar jsSingleDate" data-firstdayofweek="6"  data-localized_date='{"days":{"names":{"min":["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]}},"months":{"names":{"long":["January","February","March","April","May","June","July","August","September","October","November","December"]}}}' style="display:none;">
+					</div>
 					<select name="count">
 						<optgroup label="Pomodoro Time Count">
 						<option value="1" selected>1 Pomodoro Time</option>
@@ -55,7 +53,7 @@
 					</select>
 					<div class="ctrl_wrapper">
 						<a class="btn bg_green mtb20" href="javascript:app.do_add_task();">Add</a>
-						<a class="btn bg_grey mtb20" href="javascript:app.cancel();">Cancel</a>
+						<a class="btn bg_grey mtb20" href="javascript:menu.toggle_add_menu(false);">Cancel</a>
 					</div>
 				</li>
 				<li class="menu_item add_menu">
