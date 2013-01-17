@@ -281,7 +281,7 @@ app = (function() {
 			time += parseInt(temp);
 			mili_seconds = mili_seconds%(1000);
 		}else{
-			time += "00 . ";
+			time += "00";
 		}
 		if(mili_seconds>0 && isNotEmpty(time)){
 			time += " . "+mili_seconds;
