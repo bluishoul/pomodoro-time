@@ -42,7 +42,7 @@ var server = http.createServer(function(request, response){
         }
     });
     
-    console.log('['+t+']'+pathname);
+    console.log('['+t.toLocaleString()+']'+pathname);
 }); 
 server.listen(8080);
 console.log("server start up at http://localhost:8080\n");
