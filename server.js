@@ -37,6 +37,7 @@ var server = http.createServer(function(request, response){
 				    };
 					response.write(file, "binary");
 					response.end();
+                    
                 }
             });
         }
