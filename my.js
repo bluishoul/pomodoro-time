@@ -6,13 +6,15 @@ var tasks_list 	= [],
 	itv 		= null,
 	i 			= 0;
 var task_item = function(params){
+	this.id=0;
 	this.name="";
 	this.count=1;//count of pomodoro time
 	this.finished=0;//finished count of pomodoro time
 	this.start=0;//start time of first pomodoro time
 	this.end=0;//end time calculate via 'finished' , 'interval' and 'start' 
-	this.present=new Date().getTime();
 	this.interval=25;//25 minutes per pomodoro time
+	this.counter = 0;//counter for tarsk player
+	this.itv = 0;
 	if(isNotEmpty(params))
 		$.extend(this,params);
 	if(this.start!=0){
@@ -74,24 +76,44 @@ menu = (function() {
 
 	PT.toggle_task_process = function(){
 		var cur = $(this);
-		var name = cur.parent().attr("name");
-		var task = app.find_task_by_name(name);
+		var id = cur.parents("li").attr("id");
+		var task = app.find_task_by_id(id);
 		if(isEmpty(task)){
-			alert("Task with name :"+name+" does not exist!");
+			alert("Task with id :"+id+" does not exist!");
 			return;
 		}
 		if(cur.is(".play_task")){
-			pause_other();
+			pause_other(task);
 			cur.attr("class","pause_task");
-			itv = setInterval(function(){if(i==1000){i=0;}$(".progress").eq(cur.parent().index()).width((i++/10)+"%")},1)
+			task.itv = setInterval(function(){
+				var sum = task.count*task.interval*60;
+				var finished = task.finished*task.interval*60;
+
+				if(task.counter+finished==sum){
+					clearInterval(task.itv);
+				}else if(task.counter!=0 && task.counter%(task.interval*60)==0){
+					task.finished = task.finished + 1;
+					task.counter = 0;
+				}
+				var width_all = (finished+(task.counter))*100/sum;
+				var width_one = task.counter*100/(task.interval*60);
+				task.counter = task.counter+1;
+				storage.set("tasks_list",tasks_list);
+				$("#prg"+task.id).width(width_all+"%");
+				$("header .progress").width(width_one+"%").html(app.get_friendly_time(task.counter*1000));
+			},1000);
 		}else{
 			cur.attr("class","play_task");
-			if(isNotEmpty(itv))clearInterval(itv);
+			if(task.itv != 0)
+				clearInterval(task.itv);
 		}
 	};
 
 	var pause_other = function(cur){
-		if(isNotEmpty(itv))clearInterval(itv);
+		$.each(tasks_list,function(k,v){
+			if(v.itv != 0 && v.id!=cur.id)
+				clearInterval(v.itv);
+		});
 		$(".pause_task").attr("class","play_task");
 	};
 
@@ -121,6 +143,13 @@ storage = (function() {
 	PT.get = function(key) {
 		return $.jStorage.get(key);
 	}
+
+	PT.remove_all = function(){
+		if(confirm("Ensure to Remove All the Records?")){
+			this.set("tasks_list",null);
+			location.reload();
+		}
+	};
 
 	return new storage().init();
 })();
@@ -182,7 +211,16 @@ app = (function() {
 		var t = null;
 		$.each(tasks_list,function(idx,task){
 			if(task.name = name)
-				t = name;
+				t = task;
+		});
+		return t;
+	};
+
+	PT.find_task_by_id = function(id){
+		var t = null;
+		$.each(tasks_list,function(idx,task){
+			if(task.id == id)
+				t = task;
 		});
 		return t;
 	};
@@ -207,7 +245,8 @@ app = (function() {
 			name:name.val(),
 			count:parseInt(count),
 			interval:parseInt(interval),
-			start:parseInt(start.val())
+			start:parseInt(start.val()),
+			id:new Date().getTime()
 		});
 		tasks_list = $.grep(tasks_list,function(value,key){
 			return value.name!=name.val();
@@ -215,6 +254,39 @@ app = (function() {
 		tasks_list.push(item);
 		storage.set("tasks_list",tasks_list);
 		location.reload();
+	};
+
+	PT.get_friendly_time = function(mili_seconds){
+		var temp = mili_seconds/(1000*60*60);
+		var time = "";
+		/*
+		var t = new Date(mili_seconds);
+		time = (t.getHours()-8)+" : " + (t.getMinutes()) + " : " + (t.getSeconds()) + " . " + (t.getMilliseconds())
+		*/
+		if(temp>=1){
+			time += parseInt(temp)+" : ";
+			mili_seconds = mili_seconds%(1000*60*60);
+		}else{
+			time += "00 : ";
+		}
+		temp = mili_seconds/(1000*60)
+		if(temp>=1){
+			time += parseInt(temp)+" : ";
+			mili_seconds = mili_seconds%(1000*60);
+		}else{
+			time += "00 : ";
+		}
+		temp = mili_seconds/(1000)
+		if(temp>=1){
+			time += parseInt(temp);
+			mili_seconds = mili_seconds%(1000);
+		}else{
+			time += "00 . ";
+		}
+		if(mili_seconds>0 && isNotEmpty(time)){
+			time += " . "+mili_seconds;
+		}
+		return time;
 	};
 	
 	var init_open_time = function(){
@@ -237,17 +309,32 @@ app = (function() {
 				var index = idx+1;
 				var width = value.finished*100/value.count;
 				var li = $('<li class="pl10"></li>');
+				li.attr("id",value.id);
 				var progress = $('<div class="progress"></div>');
+				progress.attr("id","prg"+value.id);
 				li.attr("name",value.name);
 				progress.html(index+"."+value.name);
 				li.append(progress);
-				li.append('<div class="play_task"></div>');
 				if(idx%2==0){
 					li.addClass("bg_grey");
 					progress.addClass("bg_blue");
 				}else{
 					progress.addClass("bg_green");
 				}
+				//add task count
+				var tc = $('<div class="task_count"></div>');
+				tc.append('<div class="play_task"></div>');
+				var ul = $('<ul></ul>');
+				tc.append(ul);
+				for(var i = 0;i<value.count;i++){
+					var l = $("<li></li>");
+					if(value.finished>i){
+						l.addClass("bg_green");
+					}
+					l.css("width",(1*100/value.count).toFixed(3)+"%")
+					ul.append(l);
+				}
+				li.append(tc);
 				progress.css("width",width+"%");
 				ol.append(li);
 			});

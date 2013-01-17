@@ -73,6 +73,7 @@ header{
 	font-size:30px;
 	height:80px;
 	line-height:80px;
+	color: #FFF;
 }
 .play_task,.pause_task{
 	width: 50px;
@@ -82,6 +83,8 @@ header{
 	cursor: pointer;
 	background-size: 50px;
 	z-index: 10;
+	right:0;
+	top:0;
 }
 .play_task{
 	background: url(http://sandbox.runjs.cn/uploads/rs/90/wwourf2n/1358366490_monotone.png) no-repeat;
@@ -98,10 +101,31 @@ header{
 	position: absolute;
 	top: 0;
 	left: 0;
-	z-index: 2;
+	z-index: 3;
 	white-space:nowrap;
 	color:#EEE;
 }
+
+.task_count{
+	height: 50px;
+	width: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 3;
+	white-space:nowrap;
+	opacity: 0.5;
+	overflow: hidden;
+
+}
+
+.task_count li{
+	float: left;
+	border-right:1px solid #D15B5B;
+	height:50px;
+	display: inline-block;
+}
+
 .task_form{
 	text-align: center;
 	padding:20px auto;
