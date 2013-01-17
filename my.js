@@ -89,15 +89,19 @@ menu = (function() {
 				var sum = task.count*task.interval*60;
 				var finished = task.finished*task.interval*60;
 
-				if(task.counter+finished==sum){
+				var width_all = (finished+(task.counter))*100/sum;
+				var width_one = task.counter*100/(task.interval*60);
+
+				if(task.counter+finished>=sum){
+					task.finished = task.count;
+					task.counter = 0;
 					clearInterval(task.itv);
 				}else if(task.counter!=0 && task.counter%(task.interval*60)==0){
 					task.finished = task.finished + 1;
 					task.counter = 0;
+				}else{
+					task.counter = task.counter+1;
 				}
-				var width_all = (finished+(task.counter))*100/sum;
-				var width_one = task.counter*100/(task.interval*60);
-				task.counter = task.counter+1;
 				storage.set("tasks_list",tasks_list);
 				$("#prg"+task.id).width(width_all+"%");
 				$("header .progress").width(width_one+"%").html(app.get_friendly_time(task.counter*1000));
@@ -328,7 +332,7 @@ app = (function() {
 				tc.append(ul);
 				for(var i = 0;i<value.count;i++){
 					var l = $("<li></li>");
-					if(value.finished>i){
+					if(value.finished>i || value.count==value.finished){
 						l.addClass("bg_green");
 					}
 					l.css("width",(1*100/value.count).toFixed(3)+"%")
