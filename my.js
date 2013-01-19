@@ -3,8 +3,44 @@ var tasks_list 	= [],
 	emergency	= [],
 	statistics 	= [],
 	breaks 		= [],
-	itv 		= null,
-	i 			= 0;
+	cur_task 	= null;
+
+var interrupt_item = function(params){
+	this.time = new Date().getTime();
+	this.cause = "close";//close:close window;number[1..2...3]:task id
+	if(isNotEmpty(params))
+		$.extend(this,params);
+};
+
+var break_item = function(params){
+	this.task = 0;
+	this.cause = 0;
+	var cur = this;
+	this.time = new Date().getTime();
+	this.duration = 0;//ms
+	this.itv = 0;//interval handler id
+	if(isNotEmpty(params))
+		$.extend(this,params);
+	this.start = function(){
+		this.itv = setInterval(function(){
+			cur.duration += 500;
+			if(cur.task != 0)
+				app.update_task(app.find_task_by_id(cur.task));
+		},500);
+		return this;
+	};
+	this.stop = function(){
+		clearInterval(cur.itv);
+		cur.itv = 0;
+		if(cur.task != 0)
+			app.update_task(app.find_task_by_id(cur.task));
+		return this;
+	};
+	this.is_active = function(){
+		return this.itv!=0;
+	};
+};
+
 var task_item = function(params){
 	this.id=0;
 	this.name="";
@@ -15,6 +51,21 @@ var task_item = function(params){
 	this.interval=25;//25 minutes per pomodoro time
 	this.counter = 0;//counter for tarsk player
 	this.itv = 0;
+	this.breaks = [];
+	this.interrupt = [];
+	this.has_finished = function(){
+		return this.count == this.finished;
+	};
+	this.last_break = function(){
+		if(this.breaks.length==0)
+			return;
+		return this.breaks[this.breaks.length-1];
+	};
+	this.equals = function(task){
+		if(isEmpty(task))
+			return false;
+		return this.id == task.id;
+	};
 	if(isNotEmpty(params))
 		$.extend(this,params);
 	if(this.start!=0){
@@ -78,6 +129,23 @@ menu = (function() {
 		var cur = $(this);
 		var id = cur.parents("li").attr("id");
 		var task = app.find_task_by_id(id);
+
+		if(task.equals(cur_task)){
+			if(cur.is(".play_task")){//continue to play:the end of a BREAK;
+				app.stop_last_break(task);
+			}else{//pause:a kind of BREAK;
+				app.add_break(task,task);
+			}
+		}else if(isNotEmpty(cur_task)){//play other task:a kind of INTERRUPT
+			if(cur.is(".play_task")){
+				app.stop_last_break(task);
+				app.add_break(cur_task,task);
+			}else{
+				app.stop_last_break(cur_task);
+				app.add_break(task,cur_task);
+			}
+		}
+		cur_task = task;
 		if(isEmpty(task)){
 			alert("Task with id :"+id+" does not exist!");
 			return;
@@ -90,7 +158,7 @@ menu = (function() {
 				var finished = task.finished*task.interval*60;
 
 				var width_all = (finished+(task.counter))*100/sum;
-				var width_one = task.counter*100/(task.interval*60);
+				var width_one = 100-task.counter*100/(task.interval*60);
 
 				if(task.counter+finished>=sum){
 					task.finished = task.count;
@@ -104,7 +172,7 @@ menu = (function() {
 				}
 				storage.set("tasks_list",tasks_list);
 				$("#prg"+task.id).width(width_all+"%");
-				$("header .progress").width(width_one+"%").html(app.get_friendly_time(task.counter*1000));
+				$("header .progress").width(width_one+"%").html(app.get_friendly_time((task.interval*60-task.counter)*1000));
 			},1000);
 		}else{
 			cur.attr("class","play_task");
@@ -155,6 +223,14 @@ storage = (function() {
 		}
 	};
 
+	PT.update_array = function(target,index,value){
+		var items = this.get(target);
+		if($.isArray(items) && items[index]){
+			items[index] = value;
+			this.set(target,items);
+		}
+	};
+
 	return new storage().init();
 })();
 
@@ -199,12 +275,67 @@ app = (function() {
 	};
 	
 	var PT = app.prototype;
+
+	PT.Events = {
+		"beforeunload->[window]":"before_unload"
+	};
 	
 	PT.init = function() {
 		Console.open();
 		init_open_time();
 		init_today_task_list();
+		g_utils.binder.call(this);
 		return this;
+	};
+
+	PT.before_unload = function(){
+		instance.add_interrupt("close");
+		instance.stop_all_breaks();
+	};
+
+	PT.add_break = function(task,cause){
+		var item = new break_item({task:task.id,cause:cause.id}).start();
+		task.breaks.push(item);
+		instance.update_task(task);
+	};
+
+	PT.stop_all_breaks = function(){
+		$.each(tasks_list,function(idx,task){
+			$.each(task.breaks,function(i,bi){
+				if(bi.stop){
+					bi.stop();
+				}else if(bi.task!=0){
+					bi.itv = 0;
+					instance.update_task(instance.find_task_by_id(bi.task));
+				}
+			});
+		});
+		storage.set("tasks_list",tasks_list);
+	};
+
+	PT.stop_last_break = function(task){
+		var item = task.last_break();
+		if(isEmpty(item) || item.itv==0)return;
+		item.stop();
+		instance.update_task(task);
+	};
+
+	PT.add_interrupt = function(cause){
+		if(isEmpty(cause))
+			cause = 'close'
+		if(cur_task!=null && !cur_task.has_finished()){
+			var item = new interrupt_item({
+				cause:cause
+			});
+			cur_task.interrupt.push(item);
+			instance.update_task(cur_task);
+		}
+	};
+
+	PT.update_task = function(task,index){
+		if(isEmpty(index))
+			index = instance.get_task_index_by_id(task.id);
+		storage.update_array("tasks_list",index,task);
 	};
 	
 	PT.add_task=function(){
@@ -227,6 +358,15 @@ app = (function() {
 				t = task;
 		});
 		return t;
+	};
+
+	PT.get_task_index_by_id = function(id){
+		var i = 0;
+		$.each(tasks_list,function(idx,task){
+			if(task.id == id)
+				i = idx;
+		});
+		return i;
 	};
 
 	PT.do_add_task =function(){
@@ -310,6 +450,7 @@ app = (function() {
 			var ol = $(".main_content ol").html("");
 			tasks_list = list;
 			$.each(tasks_list,function(idx,value){
+				tasks_list[idx] = new task_item(value);
 				var index = idx+1;
 				var width = value.finished*100/value.count;
 				var li = $('<li class="pl10"></li>');
