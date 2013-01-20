@@ -93,6 +93,39 @@ menu = (function() {
 		return this;
 	}
 
+	PT.handleTouchySwipe = function(event, $target, data){
+		var li = $target.parent();
+		var id = li.attr("id");
+		var task = app.find_task_by_id(id);
+		var pt = $target.find(".pause_task");
+		switch(data.direction){
+			case "right":
+				if(confirm("delete task ["+task.name+"] ?") && task){
+					app.remove_task(task);
+					app.reset_header_progress(0);
+					if(task.itv != 0)
+						clearInterval(task.itv);
+					li.hide("fast");
+				}
+			break;
+			case "left":
+				if(pt.length==1 && confirm("interrupt task ["+task.name+"] ?") && task){
+					app.add_interrupt(task.id);
+					if(task.itv != 0)
+						clearInterval(task.itv);
+					app.reset_header_progress(0);
+					pt.attr("class","play_task");
+					task.counter = 0;
+					app.update_task(task);
+				}
+			break;
+			case "up":
+			break;
+			case "down":
+			break;
+		}
+	};
+
 	PT.toggle_add_menu = function(open) {
 		toggle_menu(".add_menu",open);
 	}
@@ -126,6 +159,9 @@ menu = (function() {
 	};
 
 	PT.toggle_task_process = function(){
+
+		app.reset_header_progress(0);
+		
 		var cur = $(this);
 		var id = cur.parents("li").attr("id");
 		var task = app.find_task_by_id(id);
@@ -285,7 +321,16 @@ app = (function() {
 		init_open_time();
 		init_today_task_list();
 		g_utils.binder.call(this);
+		var tc = $(".task_count");
+		if(tc.length>0){
+			tc.bind("touchy-swipe", menu.handleTouchySwipe);
+			tc.data("touchySwipe").settings.velocityThresh = 0.3;
+		}
 		return this;
+	};
+
+	PT.reset_header_progress = function(width,mili_seconds){
+		$("header .progress").css("width",width+"%").html(isNotEmpty(mili_seconds)?instance.get_friendly_time(mili_seconds):"");
 	};
 
 	PT.before_unload = function(){
@@ -330,6 +375,19 @@ app = (function() {
 			cur_task.interrupt.push(item);
 			instance.update_task(cur_task);
 		}
+	};
+
+	PT.remove_task = function(task,index){
+		if(isEmpty(index))
+			index = instance.get_task_index_by_id(task.id);
+		var new_list = [];
+		$.each(tasks_list,function(idx,t){
+			if(index != idx){
+				new_list.push(t);
+			}
+		});
+		tasks_list = new_list;
+		storage.set("tasks_list",tasks_list);
 	};
 
 	PT.update_task = function(task,index){
@@ -451,6 +509,12 @@ app = (function() {
 			tasks_list = list;
 			$.each(tasks_list,function(idx,value){
 				tasks_list[idx] = new task_item(value);
+				$(tasks_list[idx].breaks,function(i,b){
+					tasks_list[idx].breaks[i] = new break_item(b);
+				});
+				$(tasks_list[idx].interrupt,function(i,b){
+					tasks_list[idx].interrupt[i] = new interrupt_item(b);
+				});
 				var index = idx+1;
 				var width = value.finished*100/value.count;
 				var li = $('<li class="pl10"></li>');
