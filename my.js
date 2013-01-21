@@ -1,3 +1,4 @@
+/*基本数据结构定义*/
 var tasks_list 	= [],
 	dialy_tasks = [],
 	emergency	= [],
