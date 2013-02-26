@@ -7,7 +7,7 @@ var server = http.createServer(function(request, response){
 	var pathname = url.parse(request.url).pathname;
     var realPath = '.'+pathname;
     if(realPath.length<=2){
-        realPath = './my.html';
+        realPath = './index.html';
     }
     fs.exists(realPath, function (exists) {
         if (!exists) {
