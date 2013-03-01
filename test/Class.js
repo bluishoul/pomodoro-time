@@ -1,7 +1,6 @@
 var Class = (function(){
  
     var instance,               //当前类内部引用实例
-        implements = {},        //新构建的类实现
         interfaces = [],        //需要实现的接口
         instance_list = {},     //所有实例
         className = "Class";    //当前类类名
@@ -26,23 +25,39 @@ var Class = (function(){
         if(isEmpty(class_name))
             Console.error.call(this,"ClassName is Null!");
         else
-            className = class_name;
+            instance.className = class_name;
         if(isEmpty(impls))
-            Console.error.call(this,"Implements of ["+className+"] is Null!");
+            Console.error.call(this,"Implements of ["+instance.className+"] is Null!");
         else
-            implements = impls;
+            instance.implements = impls;
     };
  
+    /**
+     *  实例化当前类
+     */
+    Class.prototype.instance = function(){
+        instance = this;
+        var cur = addIntance(instance.implements);
+        delete cur.interface;
+        delete cur.instance;
+        return cur;
+    };
+
     /**
      *  将新实例化对象加入到对象列表中
      *  ins : 实例化的对象
      */
     var addIntance = function(ins){
+        var temp = {};
+        $.extend(temp,ins);
         var timestamp = new Date().getTime();
-        var key = className+'#'+timestamp;
-        ins.id = key;
-        instance_list[key] = ins;
-        return ins;
+        var key = instance.className+'#'+timestamp;
+        if(isNotEmpty(get(key))){
+            return addIntance(ins);
+        }
+        temp.id = function(){return key;};
+        instance_list[key] = temp;
+        return temp;
     };
  
     /**
@@ -58,7 +73,7 @@ var Class = (function(){
      *  从对象列表中获取对象
      *  key ：对象ID
      */
-    var get = Class.prototype.get = function(key){
+    var get = Class.get = Class.prototype.get = function(key){
         if(isEmpty(key))return;
         return instance_list[key];
     };
@@ -87,18 +102,7 @@ var Class = (function(){
      *  获取当前类名
      */
     Class.prototype.getClassName = function(){
-        return className;
-    };
- 
-    /**
-     *  实例化当前类
-     */
-    Class.prototype.instance = function(){
-        var cur = this;
-        cur = addIntance(implements);
-        delete cur.interface;
-        delete cur.instance;
-        return cur;
+        return instance.className;
     };
  
     /**
@@ -106,6 +110,7 @@ var Class = (function(){
      * 参数：JSON格式的接口
      */
     Class.prototype.interface = function(){
+        instance = this;
         var Interfaces = arguments;
         $.each(arguments,function(i,v){
             interfaces.push(v);
@@ -114,25 +119,35 @@ var Class = (function(){
             Console.error.call(this,"Can`t instance "+this.getClassName()+" before implements the interface!");
             return;
         }
-        var cur = this;
-        if(isNotEmpty(implements)){
-            var constructor = implements[cur.getClassName()];
+        if(isNotEmpty(instance.implements)){
+            var constructor = instance.implements[instance.getClassName()];
             var ins = isFunc(constructor) && new constructor();
             var impl_methods = {};
-            $.each(implements,function(index,value){
-                if(index != cur.getClassName())
+            $.each(instance.implements,function(index,value){
+                if(index != instance.getClassName())
                     impl_methods[index] = value;
             });
             if(!ins)
                 ins = {};
             $.extend(ins,impl_methods);
-            implements = ins ? $.extend(ins,this) : implements;
+            instance.implements = ins ? $.extend(ins,this) : instance.implements;
             //check interface implements;
-            if(!checkInterfaceImplements(implements))
+            var errors = [];
+            for (var i = 0; i < interfaces.length; i++) {
+                var itf = interfaces[i];
+                $.merge(errors,itf.checkInterfaceImplements(instance.implements));
+            };
+            if(errors.length>0){
+                Console.error.call(ins,errors);
                 return;
-        }
+            }
+       }
         return this;
     }
+
+    Class.prototype.extends = function(ins){
+        $.extend(this,ins);
+    };
  
     return Class;
 })();
