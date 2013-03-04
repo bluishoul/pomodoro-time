@@ -4,16 +4,13 @@
 var RatchetTemplate = [
   '<header class="bar-title">',
   ' <div class="header-animated">',
-// If you want the contents of the header to be animated as well, put those elements inside a div
-// with a 'header-animated' class.
-  '   <div class="button-prev">Back</div>',
-  '   <h1 class="title">Ratchet CSS</h1>',
-  '   <div class="button-next">Next</div>',
+  '   <a href="#" class="button">三</a>',
+  '   <h1 class="title">Task List</h1>',
+  '   <a href="#" class="button">+</a>',
   '</header>',
   '<div class="content ratchet-content">',
   ' <p>Jr. was inspired by Ratchet and pulls in their gorgeous styles.</p>',
   ' <p>Here are some examples:</p>',
-  ' <div class="ratchet-examples">',
   '  <ul class="list inset">',
   '   <li>',
   '     <a href="#">',
@@ -28,7 +25,6 @@ var RatchetTemplate = [
   '  <div class="toggle active example-toggle"><div class="toggle-handle"></div></div>',
   '  <div class="example-cnts"><span class="count">1</span><span class="count-main">2</span><span class="count-positive">3</span><span class="count-negative">4</span></div>',
   '  <input type="search" placeholder="Search">',
-  ' </div>',
   ' <p>For more examples checkout the <a href="http://maker.github.com/ratchet/">ratchet project.</a></p>',
   '</div>'
 ].join('\n');
