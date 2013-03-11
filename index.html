@@ -1,72 +1,59 @@
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 	<head>
-		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-		<link rel="stylesheet" type="text/css" href="http://sandbox.runjs.cn/uploads/rs/90/wwourf2n/reset_y.css">
-		<title>Pomodoro Time for Web</title>
-		<script id="jquery_183" type="text/javascript" class="library" src="http://sandbox.runjs.cn/js/sandbox/jquery/jquery-1.8.3.min.js"></script>
-		<script type="text/javascript" src="jquery.touchy.min.js"></script>
-		<script type="text/javascript" src="http://sandbox.runjs.cn/uploads/rs/90/wwourf2n/json2.js"></script>
-		<script type="text/javascript" src="http://sandbox.runjs.cn/uploads/rs/90/wwourf2n/jstorage.min.js"></script>
-		<script type="text/javascript" src="utils.js"></script>
-		<link rel="stylesheet" type="text/css" href="my.css">
-		<script type="text/javascript" src="my.js"></script>
-		<link rel="stylesheet" type="text/css" href="http://sandbox.runjs.cn/uploads/rs/90/wwourf2n/calendar.min.css">	</head>
-		<script id="others_modernizr_262" type="text/javascript" class="library" src="http://sandbox.runjs.cn/js/sandbox/other/modernizr.min.js"></script>
-		<script type="text/javascript" src="http://sandbox.runjs.cn/uploads/rs/90/wwourf2n/calendar.min.js">
-		</script>
- 	<body>
-		<header><div class="progress bg_red" style="opacity:0.5;margin-top: 5px;"></div>ToDo of Today</header>
-		<div class="header_home_menu"><a href="javascript:location.reload();">o</a></div>
-		<div class="header_add_menu"><a href="javascript:menu.toggle_add_menu();">+</a></div>
-		<div class="main_content"><ol></ol></div>
-		<div class="menu_wrapper">
-			<ul>
-				<li class="menu_item add_task_form task_form bg_blue">
-					<input type="text" class="" name="name" placeholder="Task Name">
-					<input type="text" class="" name="start" placeholder="Touch To Select Start Date" readonly="true">
-    				<div class="calendar jsCalendar jsSingleDate" data-firstdayofweek="6"  data-localized_date='{"days":{"names":{"min":["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]}},"months":{"names":{"long":["January","February","March","April","May","June","July","August","September","October","November","December"]}}}' style="display:none;">
-					</div>
-					<select name="count">
-						<optgroup label="Pomodoro Time Count">
-						<option value="1" selected>1 Pomodoro Time</option>
-						<option value="2">2 Pomodoro Time</option>
-						<option value="3">3 Pomodoro Time</option>
-						<option value="4">4 Pomodoro Time</option>
-						<option value="5">5 Pomodoro Time</option>
-						<option value="6">6 Pomodoro Time</option>
-						<option value="7">7 Pomodoro Time</option>
-						<option value="8">8 Pomodoro Time</option>
-						<option value="9">9 Pomodoro Time</option>
-						</optgroup>
-					</select>
-					<select name="interval">
-						<optgroup label="Pomodoro Time Interval">
-						<option value="25" selected>25 minutes</option>
-						<option value="30">30 minutes</option>
-						<option value="35">35 minutes</option>
-						<option value="40">40 minutes</option>
-						<option value="45">45 minutes</option>
-						<option value="50">50 minutes</option>
-						<option value="50">55 minutes</option>
-						<option value="60">60 minutes</option>
-						</optgroup>
-					</select>
-					<div class="ctrl_wrapper">
-						<a class="btn bg_green mtb20" href="javascript:app.do_add_task();">Add</a>
-						<a class="btn bg_grey mtb20" href="javascript:menu.toggle_add_menu(false);">Cancel</a>
-					</div>
-				</li>
-				<li class="menu_item add_menu">
-					<ol>
-						<li class="bg_blue"><a href="javascript:menu.toggle_add_task(true);">Add Tasks List</a></li>
-						<li class="bg_yellow">Add Dialy Tasks</li>
-						<li class="bg_red">Add Emergency</li>
-						<li class="bg_green">Add Statistic</li>
-						<li class="bg_grey"><a href="javascript:storage.remove_all();">Remove All</a></li>
-					</ol>
-				</li>
-			</ul>
+		<title>PomodoroTime</title>
+	    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+	    <meta name="apple-mobile-web-app-capable" content="yes">
+	    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta http-equiv="content-type" content="text/html;charset=utf-8">
+    
+	    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="assets/icon/1z1b_logo114.png">
+	    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="assets/icon/1z1b_logo72.png">
+	    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="assets/icon/1z1b_logo57.png">
+		<link rel="shortcut icon" type="image/x-icon" href="assets/icon/favicon.ico">
+		<link rel="stylesheet" href="assets/css/junior.css"/>
+	    <link rel="stylesheet" type="text/css" href="assets/css/jquery.percentageloader-0.1.css">
+	    <link rel="stylesheet" href="assets/css/ratchet.css">
+	    <link rel="stylesheet" href="assets/css/counter.css">
+
+	    <style type="text/css">
+	    	/*css fix*/
+	    	header .button-next{top:5px;}
+
+			.clearfix:after{content:".";display:block;height:0;clear:both;visibility:hidden}
+			.clearfix{display:inline-block}
+			* html .clearfix{height:1%}
+			.clearfix{display:block}
+
+	    	.task-finished{text-decoration: line-through;color: #DDD;}
+	    	.content form{margin: 10px;}
+	    	.btn-input{margin: 10px 0 10px 0;}
+			.btn-input .button{height:30px;line-height: 30px;}
+	    	.btn-input input[type="text"]{width:40px;margin:0px 5px;text-align: center;}
+	    	.input-row textarea{margin: 0 5% 5% 5%;width:90%;}
+	    	/*任务列表项菜单样式*/
+	    	.task_menu{margin-top:5px;display:none;}
+	    	.task_menu ul{display:block;margin:auto;width:250px;}
+	    	.task_menu li{border-left:1px solid #EEE;padding:0px;float:left;list-style: none;width:49px;height:50px;line-height:50px;text-align:center;border-bottom:0;}
+	    	.task_menu li:first-child{border:0;}
+	    </style>
+
+	</head>
+	<body>
+	    <div id="app-container">
+		    <div id="app-main">
+		    </div>
 		</div>
-	</body>
+</body>
+
+    <script type="text/javascript" src="assets/javascript/modernizr.custom.15848.js"></script>
+    <script type="text/javascript" src="assets/javascript/jquery-1.8.3.min.js"></script>
+    <script type="text/javascript" src="assets/javascript/jquery.percentageloader-0.1.js"></script>
+    <script type="text/javascript" src="assets/javascript/lodash.min.js"></script>
+    <script type="text/javascript" src="assets/javascript/backbone-min.js"></script>
+    <script type="text/javascript" src="assets/javascript/junior.js"></script>
+    <script type="text/javascript" src="assets/javascript/WebSQL.min.js"></script>
+    <script type="text/javascript" src="assets/javascript/Storage.js"></script>
+
+    <script src="app.js"></script>
 </html>
