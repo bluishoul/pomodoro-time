@@ -14,7 +14,17 @@
 	    <link rel="stylesheet" href="ratchet.css">
 
 	    <style type="text/css">
+			.clearfix:after{content:".";display:block;height:0;clear:both;visibility:hidden}
+			.clearfix{display:inline-block}
+			* html .clearfix{height:1%}
+			.clearfix{display:block}
+
 	    	.task-finished{text-decoration: line-through;color: #DDD;}
+
+	    	.task_menu{margin-top:5px;}
+	    	.task_menu ul{display:block;margin:auto;width:250px;}
+	    	.task_menu li{border-left:1px solid #EEE;padding:0px;float:left;list-style: none;width:49px;height:50px;line-height:50px;text-align:center;border-bottom:0;}
+	    	.task_menu li:first-child{border:0;}
 	    </style>
 
 	</head>
@@ -28,11 +38,20 @@
 				</header>
 				<div class="content">
 					<ul class="list">
-					  <li>
+					  <li class="active_task">
 					    <a href="javascript:void();">
 					      招聘页面设计
 					      <span class="count">1/4</span>
 					    </a>
+					    <div class="task_menu">
+					    	<ul class="clearfix">
+					    		<li>1</li>
+					    		<li>2</li>
+					    		<li>3</li>
+					    		<li>4</li>
+					    		<li>5</li>
+					    	</ul>
+					    </div>
 					  </li>
 					  <li>
 					    <a class="task-finished" href="javascript:void();">
@@ -57,4 +76,5 @@
     <script src="lib/javascripts/lodash.min.js"></script>
     <script src="lib/javascripts/backbone-min.js"></script>
     <script src="src/javascripts/junior.js"></script>
+    <script src="app.js"></script>
 </html>

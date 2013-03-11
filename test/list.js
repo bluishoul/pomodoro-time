@@ -86,7 +86,9 @@ var AppRouter = Jr.Router.extend({
 
 
 var appRouter = new AppRouter();
+
 Backbone.history.start();
+
 Jr.Navigator.navigate('home',{
   trigger: true
 });
