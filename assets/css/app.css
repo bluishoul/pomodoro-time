@@ -1,0 +1,80 @@
+/*css fix*/
+header .button-next {
+	top: 5px;
+}
+
+.clearfix:after {
+	content: ".";
+	display: block;
+	height: 0;
+	clear: both;
+	visibility: hidden
+}
+
+.clearfix {
+	display: inline-block
+}
+
+* html .clearfix {
+	height: 1%
+}
+
+.clearfix {
+	display: block
+}
+
+.task-finished {
+	text-decoration: line-through;
+	color: #DDD;
+}
+
+.content form {
+	margin: 10px;
+}
+
+.btn-input {
+	margin: 10px 0 10px 0;
+}
+
+.btn-input .button {
+	height: 30px;
+	line-height: 30px;
+}
+
+.btn-input input[type="text"] {
+	width: 40px;
+	margin: 0px 5px;
+	text-align: center;
+}
+
+.input-row textarea {
+	margin: 0 5% 5% 5%;
+	width: 90%;
+}
+/*任务列表项菜单样式*/
+.task_menu {
+	margin-top: 5px;
+	display: none;
+}
+
+.task_menu ul {
+	display: block;
+	margin: auto;
+	width: 250px;
+}
+
+.task_menu li {
+	border-left: 1px solid #EEE;
+	padding: 0px;
+	float: left;
+	list-style: none;
+	width: 49px;
+	height: 50px;
+	line-height: 50px;
+	text-align: center;
+	border-bottom: 0;
+}
+
+.task_menu li:first-child {
+	border: 0;
+}

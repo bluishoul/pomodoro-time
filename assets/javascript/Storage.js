@@ -6,19 +6,28 @@ var storage = {
 		_.extend(self,params);
 		
 		var db = this.db = WebSQL(this.db_name);
-
-		this._remove_private();
 		
 		return this;
 	},
-	create_tables:function(){
+	create_tables:function(callback){
 		var self = this;
 		_.each(this.models,function(Model,tbname){
-			self.db.query(self.create_table_sql(tbname,Model));
+			self.db.query(self.create_table_sql(tbname,Model)).done(function(){
+				if(callback){
+					callback.call(self);
+				}
+			});
 		});
+		return this;
 	},
-	create_index:function(tbname,column){
-		this.db.query(this.create_index_sql(tbname,column));
+	create_index:function(tbname,column,callback){
+		var self = this;
+		this.db.query(this.create_index_sql(tbname,column)).done(function(){
+			if(callback){
+				callback.call(self);
+			}
+		});
+		return this;
 	},
 	get:function(tbname,id,callback){
 		if(id){
@@ -32,6 +41,7 @@ var storage = {
 				}
 			});
 		}
+		return this;
 	},
 	remove:function(tbname,id,callback){
 		var self = this;
@@ -46,6 +56,7 @@ var storage = {
 				}
 			});;
 		}
+		return this;
 	},
 	save:function(tbname,model,remove){
 		if(!model)return;
@@ -67,9 +78,10 @@ var storage = {
 				}
 			});
 		}
+		return this;
 	},
-	query:function(){},
-	update:function(){},
+	query:function(){return this;},
+	update:function(){return this;},
 	create_table_sql:function(tbname){
 		var Model = this.models[tbname];
 		var SQL = ['CREATE TABLE',tbname,this._list_all_params(Model,',')].join(' ');

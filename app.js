@@ -1,44 +1,4 @@
-var global = {
-	goto_view:function(name,dir){
-		Jr.Navigator.navigate(name,{
-			trigger:true,
-			animation:{
-				type:Jr.Navigator.animations.SLIDE_STACK,
-				direction:dir
-			}
-		});
-	},
-	goto_list_view:function(){
-		this.goto_view('',Jr.Navigator.directions.RIGHT);
-	},
-	goto_add_view:function(){
-		this.goto_view('add',Jr.Navigator.directions.LEFT);
-
-	},
-	goto_counter_view:function(){
-		this.goto_view('counter',Jr.Navigator.directions.LEFT);
-	},
-	storage:function(){
-		if(!this.stg){
-			this.stg = storage.init({
-				db_name:"pomodoro-time",
-				models:{
-					'task':TaskItem,
-					'task2':TaskItem2
-				},
-				index:{
-					'task':['finished'],
-					'task2':['finished']
-				}
-			});
-		}
-		storage = this.stg;
-		return this;
-		
-	}
-}.storage();
-
-
+/*模型定义*/
 var TaskItem = Backbone.Model.extend({
 	defaults:{
 		id:0,
@@ -65,6 +25,46 @@ var TaskItem2 = Backbone.Model.extend({
 var TaskList = Backbone.Collection.extend({
 	model:TaskItem
 });
+
+var global = {
+		goto_view:function(name,dir){
+			Jr.Navigator.navigate(name,{
+				trigger:true,
+				animation:{
+					type:Jr.Navigator.animations.SLIDE_STACK,
+					direction:dir
+				}
+			});
+		},
+		goto_list_view:function(){
+			this.goto_view('',Jr.Navigator.directions.RIGHT);
+		},
+		goto_add_view:function(){
+			this.goto_view('add',Jr.Navigator.directions.LEFT);
+
+		},
+		goto_counter_view:function(){
+			this.goto_view('counter',Jr.Navigator.directions.LEFT);
+		},
+		storage:function(){
+			if(!this.stg){
+				this.stg = storage.init({
+					db_name:"pomodoro-time",
+					models:{
+						'task':TaskItem,
+						'task2':TaskItem2
+					},
+					index:{
+						'task':['finished'],
+						'task2':['finished']
+					}
+				});
+			}
+			storage = this.stg;
+			return this;
+			
+		}
+	}.storage();
 
 var TaskItemView = Jr.View.extend({
 	tagName:'li',
